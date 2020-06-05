@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Placeholder startpagina</title>
+</head>
+<body>
+<h1> alles Lijsten</h1>
+<ul>
+    <li><a href="/restservices/aquarium">Aquaruim Lijst</a></li><br>
+    <li><a href="/restservices/bewoner">Bewoner Lijst</a></li><br>
+    <li><a href="/restservices/eigenaar">Eigenaar Lijst</a></li><br>
+</ul>
+
+<form id="newBewoner">
+    <label for="putSoort">bewoner Soort: <input type="text" id="putSoort" name="soort"></label>
+    <label for="putkleur">bewoner kleur: <input type="text" id="putkleur" name="fars"></label>
+    <label for="putAantal">bewoner Antal: <input type="text" id="putAantal" name="aantal" value="0"></label>
+    <input type="button" id="putBewoner" value="Put It">
+
+</form>
+
+<script type="text/javascript">
+    document.querySelector("#putBewoner").addEventListener("click", function () {
+        var formData = new FormData(document.querySelector("#newBewoner"));
+        var enecData = new URLSearchParams(formData.entries());
+
+        fetch("restservices/bewoner/put", {method : "POST", body : enecData})
+            .then(response => response.json())
+            .then(function (myJson) {
+            console.log(myJson);
+
+        });
+
+    });
+</script><br><br><br>
+
+<form id="newAquarium">
+    <label for="putnaam">naam: <input type="text" id="putnaam" name="naam"></label>
+    <label for="putLengte">lengte: <input type="text" id="putLengte" name="lengte" value="0"></label>
+    <label for="putBreedte">breedte: <input type="text" id="putBreedte" name="breedte" value="0"></label>
+    <label for="putHoogte">hoogte: <input type="text" id="putHoogte" name="hoogte" value="0"></label>
+    <label for="putBodemSoort">bodemsoort: <input type="text" id="putBodemSoort" name="bodemsoort"></label>
+    <label for="putWaterSoort">water soort: <input type="text" id="putWaterSoort" name="watersoort"></label>
+
+    <input type="button" id="putAquarium" value="Put It">
+
+</form>
+
+<script type="text/javascript">
+    document.querySelector("#putAquarium").addEventListener("click", function () {
+        var formData = new FormData(document.querySelector("#newAquarium"));
+        var enecData = new URLSearchParams(formData.entries());
+
+        fetch("restservices/aquarium/put", {method : "POST", body : enecData})
+            .then(response => response.json())
+            .then(function (myJson) {
+                console.log(myJson);
+
+            });
+
+    });
+
+
+</script><br><br><br><br><br>
+
+
+<form id="deleteAquarium">
+    <label for="deleteNaam">delet Aquarium : <input type="text" id="deleteNaam" name="naam" ></label>
+    <input type="button" id="delete" value="Delet It">
+
+</form>
+
+<script type="text/javascript">
+    document.querySelector("#delete").addEventListener("click", function () {
+        var name = document.querySelector("#deleteNaam").value;
+        var fetchOptions = { method : "DELETE", headers : {"Authorization" : "Bearer" + window.sessionStorage.getItem("myJWT")}};
+        fetch("restservices/aquarium/"+name, fetchOptions)
+            .then(function (response) {
+                if(response.ok) console.log("aquarium deleted");
+                else if(response.status === 404) console.log("aquarium niet gevonden");
+                else console.log("Er is iets fout")
+
+            });
+
+    });
+</script><br><br><br>
+
+
+<form id="deleteEigenaar">
+    <label for="deleteEigenaar">delet eigenaar : <input type="text" id="Eigenaar" name="naam" ></label>
+    <input type="button" id="deleteigenaar" value="Delet It">
+
+    </form>
+
+    <script type="text/javascript">
+    document.querySelector("#deleteigenaar").addEventListener("click", function () {
+        var name = document.querySelector("#Eigenaar").value;
+        var fetchOptions = { method : "DELETE", headers : {"Authorization" : "Bearer" + window.sessionStorage.getItem("myJWT")}};
+        fetch("restservices/eigenaar/"+name, fetchOptions)
+            .then(function (response) {
+                if(response.ok) console.log("Eigenaar deleted");
+                else if(response.status === 404) console.log("Eigenaar niet gevonden");
+                else console.log("Er is iets fout")
+
+            });
+
+    });
+</script><br><br><br>
+
+<h2>LOG IN</h2>
+
+<form id="loginform">
+    <label for="user">User Name :<input type="text" id="user" name="user"></label>
+    <label for="pass"> Password :<input type="text" id="pass" name="pass"></label>
+    <input type="button" name="login" id="login" value="login">
+</form>
+
+<script type="text/javascript">
+    function login(event) {
+        var formData = new FormData(document.querySelector("#loginform"));
+        var encData = new URLSearchParams(formData.entries());
+
+        fetch("restservices/authentication", { method : "POST", body : encData})
+            .then(function (response) {
+                if (response.ok) return response.json();
+                else throw "fout gegevens";
+            })
+            .then(myJson => window.sessionStorage.setItem("myJWT", myJson.JWT))
+             .catch(erroe => console.log(erroe));
+    }
+    document.querySelector("#login").addEventListener("click",login)
+</script>
+</body>
+</html>
